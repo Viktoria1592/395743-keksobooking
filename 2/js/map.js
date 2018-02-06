@@ -159,5 +159,3 @@ getOfferCard();
 
 var mapActive = document.querySelector('.map');
 mapActive.classList.remove('map--faded');
-
-console.log(realEstateOffers);
