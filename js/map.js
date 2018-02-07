@@ -14,11 +14,6 @@ var REAL_ESTATE_OFFERS_LENGTH = 8;
 var PINS_WIDTH = 40;
 var PINS_HEIGHT = 44;
 
-var randomInteger = function (min, max) {
-  var rand = min + Math.random() * (max + 1 - min);
-  rand = Math.floor(rand);
-  return rand;
-};
 
 var offerTitles = [
   'Большая уютная квартира',
@@ -58,13 +53,22 @@ var offerPhotos = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+
+var getRandomInteger = function (min, max) {
+  var rand = min + Math.random() * (max + 1 - min);
+  return Math.floor(rand);
+};
+
+
 var compareRandom = function () {
   return Math.random() - 0.5;
 };
 
-var checkinCheckoutInteger = function () {
-  return offerCheckTimes[randomInteger(0, offerCheckTimes.length - 1)];
+
+var getCheckinCheckoutInteger = function () {
+  return offerCheckTimes[getRandomInteger(0, offerCheckTimes.length - 1)];
 };
+
 
 var setAppartType = function (objType) {
   var appartType;
@@ -80,58 +84,93 @@ var setAppartType = function (objType) {
   return appartType;
 };
 
+
+var setFeatures = function (featuresArray) {
+  var templateFeature = document.createElement('li');
+  templateFeature.classList.add('feature');
+  var offerFeaturesFragment = document.createDocumentFragment();
+
+  for (var i = 0; i < featuresArray.length; i++) {
+    var featureItem = templateFeature.cloneNode();
+    featureItem.classList.add('feature--' + featuresArray[i]);
+    offerFeaturesFragment.appendChild(featureItem);
+  }
+
+  return offerFeaturesFragment;
+};
+
+
+var setPhotos = function (photosArray) {
+  var templatePhoto = document.createElement('img');
+  var photosFragment = document.createDocumentFragment();
+  for (var i = 0; i < photosArray.length; i++) {
+    var templatePhotoCopy = templatePhoto.cloneNode();
+    templatePhotoCopy.src = photosArray[i];
+    templatePhotoCopy.style.width = '65px';
+    templatePhotoCopy.style.height = '65px';
+    photosFragment.appendChild(templatePhotoCopy);
+  }
+  return photosFragment;
+};
+
+
 var realEstateOffers = [];
 
-for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
-  var locationCoordsX = randomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
-  var locationCoordsY = randomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
-  var offerFeaturesRandom = offerFeatures.slice(randomInteger(1, offerFeatures.length));
-  realEstateOffers.push({
-    'author': {
-      'avatar': 'img/avatars/user0' + (i + 1) + '.png'
-    },
-    'offer': {
-      'title': offerTitles[i],
-      'address': locationCoordsX + ', ' + locationCoordsY,
-      'price': randomInteger(MIN_PRICE, MAX_PRICE),
-      'type': offerTypes[randomInteger(0, offerTypes.length - 1)],
-      'rooms': randomInteger(MIN_ROOMS, MAX_ROOMS),
-      'guests': randomInteger(MIN_GUESTS, MAX_GUESTS),
-      'checkin': checkinCheckoutInteger(),
-      'checkout': checkinCheckoutInteger(),
-      'features': offerFeaturesRandom,
-      'description': '',
-      'photos': offerPhotos.sort(compareRandom)
-    },
-    'location': {
-      'x': locationCoordsX,
-      'y': locationCoordsY
-    }
-  });
-}
+var getArrayRealEstate = function () {
+  for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+    var locationCoordsX = getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
+    var locationCoordsY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
+    var offerFeaturesRandom = offerFeatures.slice(getRandomInteger(0, offerFeatures.length));
+    realEstateOffers.push({
+      'author': {
+        'avatar': 'img/avatars/user0' + (i + 1) + '.png'
+      },
+      'offer': {
+        'title': offerTitles[i],
+        'address': locationCoordsX + ', ' + locationCoordsY,
+        'price': getRandomInteger(MIN_PRICE, MAX_PRICE),
+        'type': offerTypes[getRandomInteger(0, offerTypes.length - 1)],
+        'rooms': getRandomInteger(MIN_ROOMS, MAX_ROOMS),
+        'guests': getRandomInteger(MIN_GUESTS, MAX_GUESTS),
+        'checkin': getCheckinCheckoutInteger(),
+        'checkout': getCheckinCheckoutInteger(),
+        'features': offerFeaturesRandom,
+        'description': '',
+        'photos': offerPhotos.sort(compareRandom)
+      },
+      'location': {
+        'x': locationCoordsX,
+        'y': locationCoordsY
+      }
+    });
+  }
+};
 
-var template = document.querySelector('template');
-
-var pinsOnMap = document.querySelector('.map__pins');
-var pinsTemplate = template.content.querySelector('.map__pin');
-
-for (i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
-  var pinsElement = pinsTemplate.cloneNode(true);
-  var fragment = document.createDocumentFragment();
-  pinsElement.setAttribute('style', 'left: ' + (realEstateOffers[i].location.x + PINS_WIDTH / 2) +
-    'px; top: ' + (realEstateOffers[i].location.y + PINS_HEIGHT) + 'px');
-  pinsElement.querySelector('img').setAttribute('src', realEstateOffers[i].author.avatar);
+getArrayRealEstate();
 
 
-  fragment.appendChild(pinsElement);
-  pinsOnMap.appendChild(fragment);
+var getPinsOnMap = function () {
+  var pinsOnMap = document.querySelector('.map__pins');
+  var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
+  for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+    var pinsElement = pinsTemplate.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+    pinsElement.setAttribute('style', 'left: ' + (realEstateOffers[i].location.x + PINS_WIDTH / 2) +
+      'px; top: ' + (realEstateOffers[i].location.y + PINS_HEIGHT) + 'px');
+    pinsElement.querySelector('img').setAttribute('src', realEstateOffers[i].author.avatar);
+    fragment.appendChild(pinsElement);
+    pinsOnMap.appendChild(fragment);
+  }
+  return pinsOnMap;
+};
 
-}
+getPinsOnMap();
+
 
 var getOfferCard = function () {
   var map = document.querySelector('.map');
   var cardFragment = document.createDocumentFragment();
-  var adBlockTemplate = template.content.querySelector('article.map__card');
+  var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
   var adBlockElements = adBlockTemplate.cloneNode(true);
 
   adBlockElements.querySelector('h3').textContent = realEstateOffers[0].offer.title;
@@ -142,9 +181,11 @@ var getOfferCard = function () {
     ' комнаты для ' + realEstateOffers[0].offer.guests + ' гостей';
   adBlockElements.querySelector('.popup__check').textContent = 'Заезд после ' + realEstateOffers[0].offer.checkin +
     ', выезд до ' + realEstateOffers[0].offer.checkout;
-  // adBlockElements.querySelector('.popup__features').appendChild();
+  adBlockElements.querySelector('.popup__features').textContent = '';
+  adBlockElements.querySelector('.popup__features').appendChild(setFeatures(realEstateOffers[0].offer.features));
   adBlockElements.querySelector('.popup__description').textContent = realEstateOffers[0].offer.description;
-  // adBlockElements.querySelector('.popup__pictures').appendChild();
+  adBlockElements.querySelector('.popup__pictures').textContent = '';
+  adBlockElements.querySelector('.popup__pictures').appendChild(setPhotos(realEstateOffers[0].offer.photos));
   adBlockElements.querySelector('.popup__avatar').src = realEstateOffers[0].author.avatar;
 
   var insertContainer = document.querySelector('.map__filters-container');
