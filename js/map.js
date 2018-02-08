@@ -142,15 +142,15 @@ getArrayRealEstate();
 var getPinsOnMap = function () {
   var pinsOnMap = document.querySelector('.map__pins');
   var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
+  var fragment = document.createDocumentFragment();
   for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
     var pinsElement = pinsTemplate.cloneNode(true);
-    var fragment = document.createDocumentFragment();
     pinsElement.setAttribute('style', 'left: ' + (realEstateOffers[i].location.x + PINS_WIDTH / 2) +
       'px; top: ' + (realEstateOffers[i].location.y + PINS_HEIGHT) + 'px');
     pinsElement.querySelector('img').setAttribute('src', realEstateOffers[i].author.avatar);
     fragment.appendChild(pinsElement);
-    pinsOnMap.appendChild(fragment);
   }
+  pinsOnMap.appendChild(fragment);
   return pinsOnMap;
 };
 
