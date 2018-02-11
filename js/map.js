@@ -1,5 +1,7 @@
 'use strict';
 
+// МОДУЛЬ 3 ЗАДАЧА 1
+
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MIN_ROOMS = 1;
@@ -154,34 +156,57 @@ var getPinsOnMap = function () {
   return pinsOnMap;
 };
 
-getPinsOnMap();
-
-var getOfferCard = function () {
+var renderOfferCard = function (i) {
   var map = document.querySelector('.map');
   var cardFragment = document.createDocumentFragment();
   var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
   var adBlockElement = adBlockTemplate.cloneNode(true);
-  adBlockElement.querySelector('h3').textContent = realEstateOffers[0].offer.title;
-  adBlockElement.querySelector('.popup__address small').textContent = realEstateOffers[0].offer.address;
-  adBlockElement.querySelector('.popup__price').textContent = realEstateOffers[0].offer.price + ' ₽/ночь';
-  adBlockElement.querySelector('h4').textContent = setAppartType(realEstateOffers[0].offer.type);
-  adBlockElement.querySelector('.popup__rooms-and-guests').textContent = realEstateOffers[0].offer.rooms +
-    ' комнаты для ' + realEstateOffers[0].offer.guests + ' гостей';
-  adBlockElement.querySelector('.popup__check').textContent = 'Заезд после ' + realEstateOffers[0].offer.checkin +
-    ', выезд до ' + realEstateOffers[0].offer.checkout;
+  adBlockElement.querySelector('h3').textContent = realEstateOffers[i].offer.title;
+  adBlockElement.querySelector('.popup__address small').textContent = realEstateOffers[i].offer.address;
+  adBlockElement.querySelector('.popup__price').textContent = realEstateOffers[i].offer.price + ' ₽/ночь';
+  adBlockElement.querySelector('h4').textContent = setAppartType(realEstateOffers[i].offer.type);
+  adBlockElement.querySelector('.popup__rooms-and-guests').textContent = realEstateOffers[i].offer.rooms +
+    ' комнаты для ' + realEstateOffers[i].offer.guests + ' гостей';
+  adBlockElement.querySelector('.popup__check').textContent = 'Заезд после ' + realEstateOffers[i].offer.checkin +
+    ', выезд до ' + realEstateOffers[i].offer.checkout;
   adBlockElement.querySelector('.popup__features').textContent = '';
-  adBlockElement.querySelector('.popup__features').appendChild(setFeatures(realEstateOffers[0].offer.features));
-  adBlockElement.querySelector('.popup__description').textContent = realEstateOffers[0].offer.description;
+  adBlockElement.querySelector('.popup__features').appendChild(setFeatures(realEstateOffers[i].offer.features));
+  adBlockElement.querySelector('.popup__description').textContent = realEstateOffers[i].offer.description;
   adBlockElement.querySelector('.popup__pictures').textContent = '';
-  adBlockElement.querySelector('.popup__pictures').appendChild(setPhotos(realEstateOffers[0].offer.photos));
-  adBlockElement.querySelector('.popup__avatar').src = realEstateOffers[0].author.avatar;
+  adBlockElement.querySelector('.popup__pictures').appendChild(setPhotos(realEstateOffers[i].offer.photos));
+  adBlockElement.querySelector('.popup__avatar').src = realEstateOffers[i].author.avatar;
   var insertContainer = document.querySelector('.map__filters-container');
   cardFragment.appendChild(adBlockElement);
   map.insertBefore(cardFragment, insertContainer);
   return map;
 };
 
-getOfferCard();
+// МОДУЛЬ 4 ЗАДАЧА 1;
 
-var mapActive = document.querySelector('.map');
-mapActive.classList.remove('map--faded');
+var fieldList = document.querySelectorAll('fieldset');
+
+for (var i = 0; i < fieldList.length; i++) {
+  fieldList[i].disabled = true;
+}
+
+var mainPin = document.querySelector('.map__pin--main');
+var mainPinMouseupHandler = function () {
+  for (i = 0; i < fieldList.length; i++) {
+    fieldList[i].disabled = false;
+  }
+  getPinsOnMap();
+};
+
+mainPin.addEventListener('mouseup', mainPinMouseupHandler);
+
+var map = document.querySelector('.map');
+var mapCardsClickHandler = function (evt) {
+  var target = evt.target;
+  if (target.classList.contains('map__pin--user') !== true) {
+    return;
+  }
+  renderOfferCard(0);
+  console.log(target);
+};
+
+map.addEventListener('click', mapCardsClickHandler, true);
