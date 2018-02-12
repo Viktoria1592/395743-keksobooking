@@ -15,6 +15,9 @@ var LOCATION_Y_MAX = 500;
 var REAL_ESTATE_OFFERS_LENGTH = 8;
 var PINS_WIDTH = 40;
 var PINS_HEIGHT = 44;
+var PINS_SHARP_HEIGHT = 22;
+var MAIN_PIN_CENTER_X = 600;
+var MAIN_PIN_CENTER_Y = 352;
 
 var offerTitles = [
   'Большая уютная квартира',
@@ -141,9 +144,9 @@ var getArrayRealEstate = function () {
 
 getArrayRealEstate();
 
+var pinsOnMap = document.querySelector('.map__pins');
+var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var getPinsOnMap = function () {
-  var pinsOnMap = document.querySelector('.map__pins');
-  var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
     var pinsElement = pinsTemplate.cloneNode(true);
@@ -160,7 +163,8 @@ var renderOfferCard = function (i) {
   var map = document.querySelector('.map');
   var cardFragment = document.createDocumentFragment();
   var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
-  var adBlockElement = adBlockTemplate.cloneNode(true);
+  window.adBlockElementGlobal = adBlockTemplate.cloneNode(true);
+  var adBlockElement = window.adBlockElementGlobal = adBlockTemplate.cloneNode(true);
   adBlockElement.querySelector('h3').textContent = realEstateOffers[i].offer.title;
   adBlockElement.querySelector('.popup__address small').textContent = realEstateOffers[i].offer.address;
   adBlockElement.querySelector('.popup__price').textContent = realEstateOffers[i].offer.price + ' ₽/ночь';
@@ -183,30 +187,64 @@ var renderOfferCard = function (i) {
 
 // МОДУЛЬ 4 ЗАДАЧА 1;
 
+// события активации / деактивации страницы
 var fieldList = document.querySelectorAll('fieldset');
-
 for (var i = 0; i < fieldList.length; i++) {
   fieldList[i].disabled = true;
 }
 
+var map = document.querySelector('.map');
+var noticeForm = document.querySelector('.notice__form');
 var mainPin = document.querySelector('.map__pin--main');
-var mainPinMouseupHandler = function () {
+var inputAddress = document.querySelector('input#address');
+inputAddress.value = MAIN_PIN_CENTER_X + ', ' + MAIN_PIN_CENTER_Y;
+
+var activateMap = function () {
   for (i = 0; i < fieldList.length; i++) {
     fieldList[i].disabled = false;
   }
+  map.classList.remove('map--faded');
+  noticeForm.classList.remove('notice__form--disabled');
   getPinsOnMap();
+  inputAddress.value = MAIN_PIN_CENTER_X + ', ' + parseInt(MAIN_PIN_CENTER_Y + PINS_HEIGHT / 2 + PINS_SHARP_HEIGHT, 10);
+  mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
+  mainPin.removeEventListener('keyup', mainPinKeyupHandler);
 };
 
+var mainPinMouseupHandler = function () {
+  activateMap();
+};
 mainPin.addEventListener('mouseup', mainPinMouseupHandler);
 
-var map = document.querySelector('.map');
+var mainPinKeyupHandler = function (evt) {
+  if (evt.keyCode === 13) {
+    activateMap();
+  }
+};
+mainPin.addEventListener('keyup', mainPinKeyupHandler);
+
+// делегирование и рендер карточек
+function getElementIndex(node) {
+  var index = 0;
+  while ((node = node.previousElementSibling)) {
+    index++;
+  }
+  return index;
+}
+
 var mapCardsClickHandler = function (evt) {
+  var overlay = document.querySelector('.map__pinsoverlay');
+  if (overlay) {
+    pinsOnMap.removeChild(overlay);
+  }
   var target = evt.target;
-  if (target.classList.contains('map__pin--user') !== true) {
+  var button = target.closest('.map__pin--user');
+  var index;
+  if (!button) {
     return;
   }
-  renderOfferCard(0);
-  console.log(target);
+  index = getElementIndex(button) - 1;
+  renderOfferCard(index);
+  map.replaceChild(window.adBlockElementGlobal, window.adBlockElementGlobal.previousSibling);
 };
-
-map.addEventListener('click', mapCardsClickHandler, true);
+map.addEventListener('click', mapCardsClickHandler);
