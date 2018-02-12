@@ -18,6 +18,7 @@ var PINS_HEIGHT = 44;
 var PINS_SHARP_HEIGHT = 22;
 var MAIN_PIN_CENTER_X = 600;
 var MAIN_PIN_CENTER_Y = 352;
+var ENTER_KEYCODE = 13;
 
 var offerTitles = [
   'Большая уютная квартира',
@@ -187,22 +188,26 @@ var renderOfferCard = function (i) {
 
 // МОДУЛЬ 4 ЗАДАЧА 1;
 
-// события активации / деактивации страницы
-var fieldList = document.querySelectorAll('fieldset');
-for (var i = 0; i < fieldList.length; i++) {
-  fieldList[i].disabled = true;
-}
+// глобальные переменные
 
-var map = document.querySelector('.map');
-var noticeForm = document.querySelector('.notice__form');
-var mainPin = document.querySelector('.map__pin--main');
 var inputAddress = document.querySelector('input#address');
 inputAddress.value = MAIN_PIN_CENTER_X + ', ' + MAIN_PIN_CENTER_Y;
+var map = document.querySelector('.map');
+var mainPin = document.querySelector('.map__pin--main');
+var fieldList = document.querySelectorAll('fieldset');
 
-var activateMap = function () {
-  for (i = 0; i < fieldList.length; i++) {
-    fieldList[i].disabled = false;
+// функция переключения активации / деактивации
+var toggleFormAviability = function (isFormMustDisabled) {
+  for (var i = 0; i < fieldList.length; i++) {
+    fieldList[i].disabled = isFormMustDisabled;
   }
+};
+toggleFormAviability(true);
+
+// функция активации карты и отрисовки похожих объявлений
+var activateMap = function () {
+  toggleFormAviability(false);
+  var noticeForm = document.querySelector('.notice__form');
   map.classList.remove('map--faded');
   noticeForm.classList.remove('notice__form--disabled');
   getPinsOnMap();
@@ -211,19 +216,20 @@ var activateMap = function () {
   mainPin.removeEventListener('keyup', mainPinKeyupHandler);
 };
 
+// обработчики нажатия на main__pin
 var mainPinMouseupHandler = function () {
   activateMap();
 };
 mainPin.addEventListener('mouseup', mainPinMouseupHandler);
 
 var mainPinKeyupHandler = function (evt) {
-  if (evt.keyCode === 13) {
+  if (evt.keyCode === ENTER_KEYCODE) {
     activateMap();
   }
 };
 mainPin.addEventListener('keyup', mainPinKeyupHandler);
 
-// делегирование и рендер карточек
+// получение индекса элемента
 function getElementIndex(node) {
   var index = 0;
   while ((node = node.previousElementSibling)) {
@@ -232,6 +238,7 @@ function getElementIndex(node) {
   return index;
 }
 
+// делегирование и рендер карточек
 var mapCardsClickHandler = function (evt) {
   var overlay = document.querySelector('.map__pinsoverlay');
   if (overlay) {
