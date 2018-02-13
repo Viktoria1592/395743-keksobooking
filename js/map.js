@@ -255,3 +255,11 @@ var mapCardsClickHandler = function (evt) {
   map.replaceChild(window.adBlockElementGlobal, window.adBlockElementGlobal.previousSibling);
 };
 map.addEventListener('click', mapCardsClickHandler);
+
+// МОДУЛЬ 4 ЗАДАЧА 2
+
+var resetButton = document.querySelector('.form__reset');
+var resetButtonClickHandler = function () {
+  window.location.reload();
+};
+resetButton.addEventListener('click', resetButtonClickHandler);
