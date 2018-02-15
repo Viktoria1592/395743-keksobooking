@@ -50,25 +50,20 @@
     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
   ];
 
-  var getRandomInteger = function (min, max) {
-    var rand = min + Math.random() * (max + 1 - min);
-    return Math.floor(rand);
-  };
-
   var compareRandom = function () {
     return Math.random() - 0.5;
   };
 
   var getCheckinCheckoutInteger = function () {
-    return offerCheckTimes[getRandomInteger(0, offerCheckTimes.length - 1)];
+    return offerCheckTimes[window.getRandomInteger(0, offerCheckTimes.length - 1)];
   };
 
   window.realEstateOffers = [];
   var getArrayRealEstate = function () {
     for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
-      var locationCoordsX = getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
-      var locationCoordsY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
-      var offerFeaturesRandom = offerFeatures.slice(getRandomInteger(0, offerFeatures.length));
+      var locationCoordsX = window.getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
+      var locationCoordsY = window.getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
+      var offerFeaturesRandom = offerFeatures.slice(window.getRandomInteger(0, offerFeatures.length));
       window.realEstateOffers.push({
         author: {
           avatar: 'img/avatars/user0' + (i + 1) + '.png'
@@ -76,10 +71,10 @@
         offer: {
           title: offerTitles[i],
           address: locationCoordsX + ', ' + locationCoordsY,
-          price: getRandomInteger(MIN_PRICE, MAX_PRICE),
-          type: offerTypes[getRandomInteger(0, offerTypes.length - 1)],
-          rooms: getRandomInteger(MIN_ROOMS, MAX_ROOMS),
-          guests: getRandomInteger(MIN_GUESTS, MAX_GUESTS),
+          price: window.getRandomInteger(MIN_PRICE, MAX_PRICE),
+          type: offerTypes[window.getRandomInteger(0, offerTypes.length - 1)],
+          rooms: window.getRandomInteger(MIN_ROOMS, MAX_ROOMS),
+          guests: window.getRandomInteger(MIN_GUESTS, MAX_GUESTS),
           checkin: getCheckinCheckoutInteger(),
           checkout: getCheckinCheckoutInteger(),
           features: offerFeaturesRandom,
