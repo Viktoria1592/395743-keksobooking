@@ -4,10 +4,12 @@
   var REAL_ESTATE_OFFERS_LENGTH = 8;
   var PINS_WIDTH = 40;
   var PINS_HEIGHT = 44;
-  var PINS_SHARP_HEIGHT = 22;
   var MAIN_PIN_CENTER_X = 600;
   var MAIN_PIN_CENTER_Y = 352;
-  var ENTER_KEYCODE = 13;
+  var MOVE_LIMIT_TOP = 125;
+  var MOVE_LIMIT_RIGHT = 1170;
+  var MOVE_LIMIT_BOTTOM = 650;
+  var MOVE_LIMIT_LEFT = 30;
 
   var setAppartType = function (objType) {
     var appartType;
@@ -115,23 +117,66 @@
     map.classList.remove('map--faded');
     noticeForm.classList.remove('notice__form--disabled');
     getPinsOnMap();
-    inputAddress.value = MAIN_PIN_CENTER_X + ', ' + parseInt(MAIN_PIN_CENTER_Y + PINS_HEIGHT / 2 + PINS_SHARP_HEIGHT, 10);
-    mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.removeEventListener('keyup', mainPinKeyupHandler);
   };
 
-  // обработчики нажатия на main__pin
-  var mainPinMouseupHandler = function () {
-    activateMap();
-  };
-  mainPin.addEventListener('mouseup', mainPinMouseupHandler);
+  mainPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+    var button = document.querySelectorAll('.map__pin--user');
 
-  var mainPinKeyupHandler = function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      window.endingShift = {
+        top: mainPin.offsetTop - shift.y,
+        left: mainPin.offsetLeft - shift.x
+      };
+
+      mainPin.style.top = (window.endingShift.top) + 'px';
+      mainPin.style.left = (window.endingShift.left) + 'px';
+
+      if (window.endingShift.top < MOVE_LIMIT_TOP) {
+        mainPin.style.top = MOVE_LIMIT_TOP + 'px';
+      }
+      if (window.endingShift.top > MOVE_LIMIT_BOTTOM) {
+        mainPin.style.top = MOVE_LIMIT_BOTTOM + 'px';
+      }
+      if (window.endingShift.left < MOVE_LIMIT_LEFT) {
+        mainPin.style.left = MOVE_LIMIT_LEFT + 'px';
+      }
+      if (window.endingShift.left > MOVE_LIMIT_RIGHT) {
+        mainPin.style.left = MOVE_LIMIT_RIGHT + 'px';
+      }
+
+      inputAddress.value = window.endingShift.left + ', ' + window.endingShift.top;
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
       activateMap();
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+      button[i].remove();
     }
-  };
-  mainPin.addEventListener('keyup', mainPinKeyupHandler);
+  });
 
   // получение индекса элемента
   function getElementIndex(node) {
