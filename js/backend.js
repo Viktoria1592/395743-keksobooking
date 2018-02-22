@@ -1,16 +1,30 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking/data';
-
-  window.load = function (onSuccess, onError) {
+  var URL = 'https://js.dump.academy/keksobooking';
+  var request = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+      var error;
+      switch (xhr.status) {
+        case 200:
+          onLoad(xhr.response);
+          break;
+        case 400:
+          error = 'Неверный запрос';
+          break;
+        case 401:
+          error = 'Пользователь не авторизован';
+          break;
+        case 404:
+          error = 'Ничего не найдено';
+          break;
+        default:
+          error = 'Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText;
+      }
+      if (error) {
+        onError(error);
       }
     });
     xhr.addEventListener('error', function () {
@@ -19,46 +33,31 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-
-    xhr.timeout = 0; // 10s
-
-    xhr.open('GET', URL);
+    xhr.timeout = 1000  ; // 30s
+    xhr.open('GET', URL + '/data');
     xhr.send();
-  };
-})();
-
-(function () {
-  var setup = function (loadHandler, errorHandler) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        loadHandler(xhr.response);
-      } else {
-        errorHandler(xhr.response);
-      }
-    });
-    xhr.addEventListener('error', function () {
-      errorHandler('Ошибка соединения');
-    });
-    xhr.addEventListener('timeout', function () {
-      errorHandler('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
-    xhr.timeout = 10000; // 10 секунд
     return xhr;
   };
+
   window.backend = {
-    save: function (data, loadHandler, errorHandler) {
-      var xhr = setup(loadHandler, errorHandler);
-      xhr.open('POST', window.constants.SERVER_URL);
+    load: function (onLoad, onError) {
+      var xhr = request(onLoad, onError);
+      xhr.open('GET', URL + '/data');
+      xhr.send();
+    },
+    save: function (data, onLoad, onError) {
+      var xhr = request(onLoad, onError);
+      xhr.open('POST', URL);
       xhr.send(data);
     },
-    load: function (loadHandler, errorHandler) {
-      var xhr = setup(loadHandler, errorHandler);
-      xhr.open('GET', window.constants.SERVER_URL + '/data');
-      xhr.send();
+    showError: function (errorNotice) {
+      var notice = document.createElement('div');
+      notice.textContent = errorNotice;
+      notice.classList.add('error-notice');
+      document.body.appendChild(notice);
+      setTimeout(function () {
+        notice.remove();
+      }, 5000);
     }
   };
 })();
-
-
