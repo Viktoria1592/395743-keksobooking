@@ -89,7 +89,7 @@
   var renderError = function (errorMessage) {
     var node = document.createElement('div');
     node.classList.add('error-message');
-    node.style = 'z-index: 2; margin: 500px auto; width: 550px; padding: 15px; text-align: center; background-color: rgba(255,255,255, 0.7); border: 2px solid red';
+    node.style = 'z-index: 1; margin: 100px auto; width: 550px; padding: 15px; text-align: center; background-color: rgba(255,255,255, 0.7); border: 3px solid red; border-radius: 15px';
     node.style.position = 'absolute';
     node.style.left = 0;
     node.style.right = 0;

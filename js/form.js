@@ -84,10 +84,39 @@
     }
   };
   numbersRoomSelect.addEventListener('input', roomSelectInputHandler);
+
+  var notice = document.querySelector('.notice');
+  var noticeForm = notice.querySelector('.notice__form');
+
+  var resetForm = function () {
+    window.location.reload();
+  };
+
+  var formValidityNotice = function (errorMessage) {
+    var node = document.createElement('div');
+    node.classList.add('error-message');
+    node.style = 'z-index: 1; margin: -20px auto; text-align: center; color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '26px';
+    node.textContent = errorMessage;
+    notice.appendChild(node);
+    setTimeout(function () {
+      node.remove();
+    }, 5000);
+  };
+
+  var submitFormHandler = function (evt) {
+    window.backend.save(new FormData(noticeForm), resetForm, formValidityNotice);
+    evt.preventDefault();
+  };
+  noticeForm.addEventListener('submit', submitFormHandler);
+
   // поведение кнопки reset
   var resetButton = document.querySelector('.form__reset');
   var resetButtonClickHandler = function () {
-    window.location.reload();
+    resetForm();
   };
   resetButton.addEventListener('click', resetButtonClickHandler);
 })();

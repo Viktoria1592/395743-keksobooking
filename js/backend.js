@@ -33,7 +33,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 1000  ; // 30s
+    xhr.timeout = 30000; // 30s
     xhr.open('GET', URL + '/data');
     xhr.send();
     return xhr;
@@ -49,15 +49,6 @@
       var xhr = request(onLoad, onError);
       xhr.open('POST', URL);
       xhr.send(data);
-    },
-    showError: function (errorNotice) {
-      var notice = document.createElement('div');
-      notice.textContent = errorNotice;
-      notice.classList.add('error-notice');
-      document.body.appendChild(notice);
-      setTimeout(function () {
-        notice.remove();
-      }, 5000);
     }
   };
 })();
