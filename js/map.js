@@ -61,7 +61,7 @@
   }
   var map = document.querySelector('.map');
   var renderOfferCardSuccess = function (offerCard) {
-    window.i;
+    window.i = i;
     var cardFragment = document.createDocumentFragment();
     var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
     window.adBlockElementGlobal = adBlockTemplate.cloneNode(true);
