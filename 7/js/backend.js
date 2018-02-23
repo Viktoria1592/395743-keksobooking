@@ -9,7 +9,7 @@
       var error;
       switch (xhr.status) {
         case 200:
-          onLoad(xhr.response);
+          onLoad(xhr.response, window.i);
           break;
         case 400:
           error = 'Неверный запрос';

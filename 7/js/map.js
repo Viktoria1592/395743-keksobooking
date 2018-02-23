@@ -60,8 +60,8 @@
     return index;
   }
   var map = document.querySelector('.map');
-  var renderOfferCardSuccess = function (offerCard) {
-    window.i;
+  var renderOfferCardSuccess = function (offerCard, i) {
+    window.i = i;
     var cardFragment = document.createDocumentFragment();
     var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
     window.adBlockElementGlobal = adBlockTemplate.cloneNode(true);
@@ -109,12 +109,10 @@
     }
     var target = evt.target;
     var button = target.closest('.map__pin--user');
-    var index;
     if (!button) {
       return;
     }
-    index = getElementIndex(button) - 1;
-    window.i = index;
+    window.i = getElementIndex(button) - 1;
     window.backend.load(renderOfferCardSuccess, renderError);
     popup.remove();
     errorAlert.remove();
@@ -136,8 +134,8 @@
 
     for (var i = 0; i < 8; i++) {
       fragment.appendChild(getPinsOnMap(pins[i]));
-     }
-     pinsOnMap.appendChild(fragment);
+    }
+    pinsOnMap.appendChild(fragment);
   };
 
   var inputAddress = document.querySelector('input#address');
