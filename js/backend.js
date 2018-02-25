@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var ERROR_200 = 200;
+  var ERROR_400 = 400;
+  var ERROR_401 = 401;
+  var ERROR_404 = 404;
+  var SERVER_TIMEOUT = 30000;
   var URL = 'https://js.dump.academy/keksobooking';
   var request = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -8,16 +13,16 @@
     xhr.addEventListener('load', function () {
       var error;
       switch (xhr.status) {
-        case 200:
-          onLoad(xhr.response, window.i);
+        case ERROR_200:
+          onLoad(xhr.response, window.index);
           break;
-        case 400:
+        case ERROR_400:
           error = 'Неверный запрос';
           break;
-        case 401:
+        case ERROR_401:
           error = 'Пользователь не авторизован';
           break;
-        case 404:
+        case ERROR_404:
           error = 'Ничего не найдено';
           break;
         default:
@@ -33,9 +38,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 30000; // 30s
-    xhr.open('GET', URL + '/data');
-    xhr.send();
+    xhr.timeout = SERVER_TIMEOUT;
     return xhr;
   };
 
