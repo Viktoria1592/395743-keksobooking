@@ -1,9 +1,12 @@
 'use strict';
 
 (function () {
-  // МОДУЛЬ 4 ЗАДАЧА 2
+  var PIN_TOP_DEFAULT = '375px';
+  var PIN_LEFT_DEFAULT = '50%';
+  var REAL_ESTATE_OFFERS_LENGTH = 8;
+  var NOTICE_TIMEOUT = 5000;
 
-// функция выставления минимальной цены в поле #price в зависимости от изменения значения поля #type
+  // функция выставления минимальной цены в поле #price в зависимости от изменения значения поля #type
   var typeSelect = document.querySelector('#type');
   var priceInput = document.querySelector('#price');
 
@@ -88,8 +91,38 @@
   var notice = document.querySelector('.notice');
   var noticeForm = notice.querySelector('.notice__form');
 
-  var resetForm = function () {
-    window.location.reload();
+  var formDisabled = function () {
+    var fieldList = document.querySelectorAll('fieldset');
+    for (var i = 0; i < fieldList.length; i++) {
+      fieldList[i].disabled = true;
+    }
+  };
+
+  var mainPinResetCoords = function () {
+    var mainPin = document.querySelector('.map__pin--main');
+    mainPin.style.top = PIN_TOP_DEFAULT;
+    mainPin.style.left = PIN_LEFT_DEFAULT;
+  };
+  var resetPage = function () {
+    var popup = document.querySelector('.popup');
+    var noticeForm = document.querySelector('.notice__form');
+    var button = document.querySelectorAll('.map__pin--user');
+    var map = document.querySelector('.map');
+    var mapPins = document.querySelector('.map__pins');
+    if (map.contains(popup)) {
+      popup.remove();
+    }
+    if (mapPins.childElementCount > 2) {
+      for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+        button[i].remove();
+      }
+    }
+    formDisabled();
+    noticeForm.reset();
+    map.classList.add('map--faded');
+    mapPins.insertAdjacentHTML('afterbegin', '<div class="map__pinsoverlay"><h2>И снова Токио!</h2></div>');
+    mainPinResetCoords();
+    noticeForm.classList.add('notice__form--disabled');
   };
 
   var formValidityNotice = function (errorMessage) {
@@ -104,11 +137,11 @@
     notice.appendChild(node);
     setTimeout(function () {
       node.remove();
-    }, 5000);
+    }, NOTICE_TIMEOUT);
   };
 
   var submitFormHandler = function (evt) {
-    window.backend.save(new FormData(noticeForm), resetForm, formValidityNotice);
+    window.backend.save(new FormData(noticeForm), resetPage, formValidityNotice);
     evt.preventDefault();
   };
   noticeForm.addEventListener('submit', submitFormHandler);
@@ -116,7 +149,7 @@
   // поведение кнопки reset
   var resetButton = document.querySelector('.form__reset');
   var resetButtonClickHandler = function () {
-    resetForm();
+    resetPage();
   };
   resetButton.addEventListener('click', resetButtonClickHandler);
 })();

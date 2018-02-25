@@ -61,7 +61,6 @@
   }
   var map = document.querySelector('.map');
   var renderOfferCardSuccess = function (offerCard, i) {
-    window.i = i;
     var cardFragment = document.createDocumentFragment();
     var adBlockTemplate = document.querySelector('template').content.querySelector('article.map__card');
     window.adBlockElementGlobal = adBlockTemplate.cloneNode(true);
@@ -99,9 +98,15 @@
     document.body.insertAdjacentElement('afterbegin', node);
   };
 
+  var errorAlertRemove = function () {
+    var errorAlert = document.querySelector('.error-message');
+    if (errorAlert) {
+      errorAlert.remove();
+    }
+  };
+
   // делегирование и рендер карточек
   var mapCardsClickHandler = function (evt) {
-    var errorAlert = document.querySelector('.error-message');
     var overlay = document.querySelector('.map__pinsoverlay');
     var popup = document.querySelector('.popup');
     if (overlay) {
@@ -112,10 +117,12 @@
     if (!button) {
       return;
     }
-    window.i = getElementIndex(button) - 1;
+    window.index = getElementIndex(button) - 1;
     window.backend.load(renderOfferCardSuccess, renderError);
-    popup.remove();
-    errorAlert.remove();
+    if (map.contains(popup)) {
+      popup.remove();
+    }
+    errorAlertRemove();
   };
   map.addEventListener('click', mapCardsClickHandler);
 
@@ -132,7 +139,7 @@
   var renderPinsSuccess = function (pins) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
       fragment.appendChild(getPinsOnMap(pins[i]));
     }
     pinsOnMap.appendChild(fragment);
@@ -163,13 +170,14 @@
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     var button = document.querySelectorAll('.map__pin--user');
-    var errorAlert = document.querySelector('.error-message');
+    var mapPins = document.querySelector('.map__pins');
+    var popup = document.querySelector('.popup');
     var startCoords = {
       x: evt.clientX,
       y: evt.clientY
     };
-
-    var onMouseMove = function (moveEvt) {
+    errorAlertRemove();
+    var mainPinMouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
 
       var shift = {
@@ -204,19 +212,23 @@
       }
 
       inputAddress.value = window.endingShift.left + ', ' + window.endingShift.top;
-      errorAlert.remove();
     };
 
-    var onMouseUp = function (upEvt) {
+    var mainPinMouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', mainPinMouseMoveHandler);
+      document.removeEventListener('mouseup', mainPinMouseUpHandler);
       activateMap();
     };
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-    for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
-      button[i].remove();
+    document.addEventListener('mousemove', mainPinMouseMoveHandler);
+    document.addEventListener('mouseup', mainPinMouseUpHandler);
+    if (mapPins.childElementCount > 2) {
+      for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+        button[i].remove();
+      }
+    }
+    if (map.contains(popup)) {
+      popup.remove();
     }
   });
 })();
