@@ -105,7 +105,6 @@
   };
   var resetPage = function () {
     var popup = document.querySelector('.popup');
-    var noticeForm = document.querySelector('.notice__form');
     var button = document.querySelectorAll('.map__pin--user');
     var map = document.querySelector('.map');
     var mapPins = document.querySelector('.map__pins');
