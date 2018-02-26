@@ -1,10 +1,10 @@
 'use strict';
 
 (function () {
-  var ERROR_200 = 200;
-  var ERROR_400 = 400;
-  var ERROR_401 = 401;
-  var ERROR_404 = 404;
+  var SUCCESS = 200;
+  var BAD_REQUEST = 400;
+  var UNAUTHORIZED = 401;
+  var NOT_FOUND = 404;
   var SERVER_TIMEOUT = 30000;
   var URL = 'https://js.dump.academy/keksobooking';
   var request = function (onLoad, onError) {
@@ -13,16 +13,16 @@
     xhr.addEventListener('load', function () {
       var error;
       switch (xhr.status) {
-        case ERROR_200:
+        case SUCCESS:
           onLoad(xhr.response, window.index);
           break;
-        case ERROR_400:
+        case BAD_REQUEST:
           error = 'Неверный запрос';
           break;
-        case ERROR_401:
+        case UNAUTHORIZED:
           error = 'Пользователь не авторизован';
           break;
-        case ERROR_404:
+        case NOT_FOUND:
           error = 'Ничего не найдено';
           break;
         default:
