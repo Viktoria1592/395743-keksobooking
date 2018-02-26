@@ -5,6 +5,7 @@
   var PIN_LEFT_DEFAULT = '50%';
   var REAL_ESTATE_OFFERS_LENGTH = 8;
   var NOTICE_TIMEOUT = 5000;
+  var MAP_PINS_DEFAULT_CHILD_AMOUNT = 2;
 
   // функция выставления минимальной цены в поле #price в зависимости от изменения значения поля #type
   var typeSelect = document.querySelector('#type');
@@ -111,7 +112,7 @@
     if (map.contains(popup)) {
       popup.remove();
     }
-    if (mapPins.childElementCount > 2) {
+    if (mapPins.childElementCount > MAP_PINS_DEFAULT_CHILD_AMOUNT) {
       for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
         button[i].remove();
       }
