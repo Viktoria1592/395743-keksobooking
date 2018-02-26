@@ -10,6 +10,7 @@
   var MOVE_LIMIT_RIGHT = 1170;
   var MOVE_LIMIT_BOTTOM = 650;
   var MOVE_LIMIT_LEFT = 30;
+  var MAP_PINS_DEFAULT_CHILD_AMOUNT = 2;
 
   var setAppartType = function (objType) {
     var appartType;
@@ -222,7 +223,7 @@
     };
     document.addEventListener('mousemove', mainPinMouseMoveHandler);
     document.addEventListener('mouseup', mainPinMouseUpHandler);
-    if (mapPins.childElementCount > 2) {
+    if (mapPins.childElementCount > MAP_PINS_DEFAULT_CHILD_AMOUNT) {
       for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
         button[i].remove();
       }
