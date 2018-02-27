@@ -1,9 +1,13 @@
 'use strict';
 
 (function () {
-  // МОДУЛЬ 4 ЗАДАЧА 2
+  var PIN_TOP_DEFAULT = '375px';
+  var PIN_LEFT_DEFAULT = '50%';
+  var REAL_ESTATE_OFFERS_LENGTH = 8;
+  var NOTICE_TIMEOUT = 5000;
+  var MAP_PINS_DEFAULT_CHILD_AMOUNT = 2;
 
-// функция выставления минимальной цены в поле #price в зависимости от изменения значения поля #type
+  // функция выставления минимальной цены в поле #price в зависимости от изменения значения поля #type
   var typeSelect = document.querySelector('#type');
   var priceInput = document.querySelector('#price');
 
@@ -84,10 +88,68 @@
     }
   };
   numbersRoomSelect.addEventListener('input', roomSelectInputHandler);
+
+  var notice = document.querySelector('.notice');
+  var noticeForm = notice.querySelector('.notice__form');
+
+  var formDisabled = function () {
+    var fieldList = document.querySelectorAll('fieldset');
+    for (var i = 0; i < fieldList.length; i++) {
+      fieldList[i].disabled = true;
+    }
+  };
+
+  var mainPinResetCoords = function () {
+    var mainPin = document.querySelector('.map__pin--main');
+    mainPin.style.top = PIN_TOP_DEFAULT;
+    mainPin.style.left = PIN_LEFT_DEFAULT;
+  };
+  var resetPage = function () {
+    var popup = document.querySelector('.popup');
+    var button = document.querySelectorAll('.map__pin--user');
+    var map = document.querySelector('.map');
+    var mapPins = document.querySelector('.map__pins');
+    if (map.contains(popup)) {
+      popup.remove();
+    }
+    if (mapPins.childElementCount > MAP_PINS_DEFAULT_CHILD_AMOUNT) {
+      for (var i = 0; i < REAL_ESTATE_OFFERS_LENGTH; i++) {
+        button[i].remove();
+      }
+    }
+    formDisabled();
+    noticeForm.reset();
+    map.classList.add('map--faded');
+    mapPins.insertAdjacentHTML('afterbegin', '<div class="map__pinsoverlay"><h2>И снова Токио!</h2></div>');
+    mainPinResetCoords();
+    noticeForm.classList.add('notice__form--disabled');
+  };
+
+  var formValidityNotice = function (errorMessage) {
+    var node = document.createElement('div');
+    node.classList.add('error-message');
+    node.style = 'z-index: 1; margin: -20px auto; text-align: center; color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '26px';
+    node.textContent = errorMessage;
+    notice.appendChild(node);
+    setTimeout(function () {
+      node.remove();
+    }, NOTICE_TIMEOUT);
+  };
+
+  var submitFormHandler = function (evt) {
+    window.backend.save(new FormData(noticeForm), resetPage, formValidityNotice);
+    evt.preventDefault();
+  };
+  noticeForm.addEventListener('submit', submitFormHandler);
+
   // поведение кнопки reset
   var resetButton = document.querySelector('.form__reset');
   var resetButtonClickHandler = function () {
-    window.location.reload();
+    resetPage();
   };
   resetButton.addEventListener('click', resetButtonClickHandler);
 })();
